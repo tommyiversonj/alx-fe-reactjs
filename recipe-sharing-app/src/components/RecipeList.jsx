@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { useRecipeStore } from './recipeStore';
 
 const RecipeList = () => {
-  const { recipes, searchTerm, setSearchTerm, deleteRecipe } = useRecipeStore();
+    const { recipes, searchTerm, setSearchTerm, deleteRecipe } = useRecipeStore();
 
-  const filteredRecipes = recipes.filter((recipe) =>
-    recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const filteredRecipes = recipes.filter((recipe) =>
+        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div>
