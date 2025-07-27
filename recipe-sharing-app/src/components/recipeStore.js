@@ -3,8 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const useRecipeStore = create((set) => ({
     recipes: [],
+    favorite: [],
+    recommendations: [],
     searchTerm: '',
     filteredRecipes: [],
+
+    // Set all recipes at once
+    setRecipes: (recipes) => set({ recipes }),
+
+    // Search & filter functionality
     setSearchTerm: (term) => {
         set({ searchTerm: term });
         set((state) => ({
@@ -13,6 +20,19 @@ export const useRecipeStore = create((set) => ({
             ),
         }));
     },
+    addFavorite: (recipeId) => set(state => ({ favorites: [...state.favorites, recipeId] })),
+    removeFavorite: (recipeId) => set(state => ({
+        favorites: state.favorites.filter(id => id !== recipeId)
+    })),
+
+    recommendations: [],
+    generateRecommendations: () => set(state => {
+        // Mock implementation based on favorites
+        const recommended = state.recipes.filter(recipe =>
+            state.favorites.includes(recipe.id) && Math.random() > 0.5
+        );
+        return { recommendations: recommended };
+    }),
 
     addRecipe: (recipe) =>
         set((state) => ({
