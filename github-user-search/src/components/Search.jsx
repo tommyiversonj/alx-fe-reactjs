@@ -51,6 +51,13 @@ const Search = () => {
             )}
         </div>
     );
+
+    <form onSubmit={handleSubmit} className="...tailwind classes...">
+        <input type="text" placeholder="Username" />
+        <input type="text" placeholder="Location" />
+        <input type="number" placeholder="Minimum Repositories" />
+        <button type="submit">Search</button>
+    </form>
 };
 
 export default Search;
