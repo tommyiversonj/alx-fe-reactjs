@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService'; // 
+import { fetchUserData } from '../services/githubService';
 import { Link } from 'react-router-dom';
 
 const Search = () => {
@@ -15,10 +15,11 @@ const Search = () => {
         setUserData(null);
 
         try {
-            const data = await fetchUserData(username); // 
+            const data = await fetchUserData(username);
             setUserData(data);
         } catch (err) {
-            setError("Looks like we can't find the user.");
+            // MATCH THIS EXACT STRING
+            setError("Looks like we cant find the user");
         } finally {
             setLoading(false);
         }
