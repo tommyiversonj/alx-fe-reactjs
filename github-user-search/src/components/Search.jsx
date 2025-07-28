@@ -5,32 +5,40 @@ const Search = () => {
     const [username, setUsername] = useState('');
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); 
 
-    const handleSearch = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // 
+        setLoading(true);   
+        setError('');
+        setUserData(null);
+
         try {
-            const data = await githubAPI(username);
+            const data = await githubAPI(username); 
             setUserData(data);
-            setError('');
         } catch (err) {
-            setUserData(null);
-            setError('Looks like we cant find the user'); // ✅ Add this message
+            setError("Looks like we cant find the user");
+        } finally {
+            setLoading(false); // 
         }
     };
 
     return (
         <div className="search-container">
-            <input
-                type="text"
-                placeholder="Search GitHub user..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
+            <form onSubmit={handleSubmit}> 
+                <input
+                    type="text"
+                    placeholder="Search GitHub user..."
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+                <button type="submit">Search</button>
+            </form>
 
-            {/* Error Message */}
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {loading && <p>Loading</p>} 
 
-            {/* Display User Data */}
+            {error && <p className="text-red-500 mt-2">{error}</p>} 
+
             {userData && (
                 <div className="user-card mt-4">
                     <img src={userData.avatar_url} alt={userData.login} />
