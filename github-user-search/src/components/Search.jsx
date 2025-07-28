@@ -1,56 +1,47 @@
 import React, { useState } from 'react';
-import fetchUserData from '../services/githubService';
+import githubAPI from '../services/githubService';
 
-function Search() {
+const Search = () => {
     const [username, setUsername] = useState('');
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [userData, setUserData] = useState(null);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!username) return;
-
-        setLoading(true);
-        setError('');
-        setUser(null);
-
+    const handleSearch = async () => {
         try {
-            const userData = await fetchUserData(username);
-            setUser(userData);
+            const data = await githubAPI(username);
+            setUserData(data);
+            setError('');
         } catch (err) {
-            setError('Looks like we can’t find the user');
-        } finally {
-            setLoading(false);
+            setUserData(null);
+            setError('Looks like we cant find the user'); // ✅ Add this message
         }
     };
 
     return (
-        <div>
-            <h2>Search GitHub User</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Enter GitHub username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <button type="submit">Search</button>
-            </form>
+        <div className="search-container">
+            <input
+                type="text"
+                placeholder="Search GitHub user..."
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+            />
+            <button onClick={handleSearch}>Search</button>
 
-            {loading && <p>Loading...</p>}
-            {error && <p>{error}</p>}
-            {user && (
-                <div>
-                    <img src={user.avatar_url} alt="Avatar" width="100" />
-                    <h3>{user.name || user.login}</h3>
-                    <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                        Visit GitHub Profile
+            {/* Error Message */}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+
+            {/* Display User Data */}
+            {userData && (
+                <div className="user-card mt-4">
+                    <img src={userData.avatar_url} alt={userData.login} />
+                    <p>{userData.name || userData.login}</p>
+                    <a href={userData.html_url} target="_blank" rel="noreferrer">
+                        View Profile
                     </a>
                 </div>
             )}
         </div>
     );
-}
+};
 
 export default Search;
