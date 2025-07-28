@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
-import githubAPI from '../services/githubService';
+import { fetchUserData } from '../services/githubService'; // 
+import { Link } from 'react-router-dom';
 
 const Search = () => {
     const [username, setUsername] = useState('');
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 
-        setLoading(true);   
+        e.preventDefault();
+        setLoading(true);
         setError('');
         setUserData(null);
 
         try {
-            const data = await githubAPI(username); 
+            const data = await fetchUserData(username); // 
             setUserData(data);
         } catch (err) {
-            setError("Looks like we cant find the user");
+            setError("Looks like we can't find the user.");
         } finally {
-            setLoading(false); // 
+            setLoading(false);
         }
     };
 
     return (
         <div className="search-container">
-            <form onSubmit={handleSubmit}> 
+            <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     placeholder="Search GitHub user..."
@@ -35,9 +36,8 @@ const Search = () => {
                 <button type="submit">Search</button>
             </form>
 
-            {loading && <p>Loading</p>} 
-
-            {error && <p className="text-red-500 mt-2">{error}</p>} 
+            {loading && <p>Loading</p>}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
 
             {userData && (
                 <div className="user-card mt-4">
