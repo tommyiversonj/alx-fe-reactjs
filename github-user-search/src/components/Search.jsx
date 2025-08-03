@@ -1,63 +1,82 @@
-import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { fetchUserData } from "../services/githubService";
 
 const Search = () => {
-    const [username, setUsername] = useState('');
-    const [userData, setUserData] = useState(null);
-    const [error, setError] = useState('');
+    const [username, setUsername] = useState("");
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSubmit = async (e) => {
+    // Async function to handle search
+    const handleSearch = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
-        setUserData(null);
+        setError(null);
 
         try {
-            const data = await fetchUserData(username);
-            setUserData(data);
+            // Await the API call
+            const result = await fetchUserData(username);
+
+            // If the API call is successful, update users state
+            setUsers(result.items || []); // 'items' if the API returns a list of users
         } catch (err) {
-            // MATCH THIS EXACT STRING
-            setError("Looks like we cant find the user");
+            // Handle any error that occurs during the API call
+            setError("Looks like we can't find the user.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="search-container">
-            <form onSubmit={handleSubmit}>
+        <div className="p-4">
+            {/* Search Form */}
+            <form onSubmit={handleSearch} className="mb-4">
                 <input
                     type="text"
-                    placeholder="Search GitHub user..."
+                    placeholder="Search GitHub users..."
+                    className="border p-2 rounded w-full"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <button type="submit">Search</button>
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white mt-2 p-2 rounded"
+                >
+                    Search
+                </button>
             </form>
 
-            {loading && <p>Loading</p>}
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {/* Loading State */}
+            {loading && <p>Loading...</p>}
 
-            {userData && (
-                <div className="user-card mt-4">
-                    <img src={userData.avatar_url} alt={userData.login} />
-                    <p>{userData.name || userData.login}</p>
-                    <a href={userData.html_url} target="_blank" rel="noreferrer">
-                        View Profile
-                    </a>
-                </div>
-            )}
+            {/* Error Message */}
+            {error && <p className="text-red-500">{error}</p>}
+
+            {/* Search Results */}
+            <div>
+                {users.length > 0 ? (
+                    users.map((user) => (
+                        <div key={user.id} className="border p-4 mb-2 rounded">
+                            <img
+                                src={user.avatar_url}
+                                alt={user.login}
+                                className="w-16 h-16 rounded-full"
+                            />
+                            <p>
+                                <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                                    {user.login}
+                                </a>
+                            </p>
+                            <p>Location: {user.location || "Unknown"}</p>
+                            <p>Repos: {user.public_repos}</p>
+                        </div>
+                    ))
+                ) : (
+                    !loading && <p>No users found.</p>
+                )}
+            </div>
         </div>
     );
-
-    <form onSubmit={handleSubmit} className="...tailwind classes...">
-        <input type="text" placeholder="Username" />
-        <input type="text" placeholder="Location" />
-        <input type="number" placeholder="Minimum Repositories" />
-        <button type="submit">Search</button>
-    </form>
 };
 
 export default Search;
