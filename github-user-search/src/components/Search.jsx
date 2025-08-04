@@ -1,80 +1,94 @@
-import React, { useState } from "react";
-import { fetchUserData } from "../services/githubService";
+import React, { useState } from 'react';
+import { fetchUserData } from '../services/githubService';
 
 const Search = () => {
-    const [username, setUsername] = useState("");
-    const [users, setUsers] = useState([]);
+    const [username, setUsername] = useState('');
+    const [location, setLocation] = useState('');
+    const [minRepos, setMinRepos] = useState('');
+    const [userData, setUserData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(false);
 
-    // Async function to handle search
-    const handleSearch = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(null);
-
+        setError(false);
         try {
-            // Await the API call
-            const result = await fetchUserData(username);
-
-            // If the API call is successful, update users state
-            setUsers(result.items || []); // 'items' if the API returns a list of users
+            const data = await fetchUserData(username, location, minRepos);
+            setUserData(data.items || []);
+            setUsername('');
+            setLocation('');
+            setMinRepos('');
         } catch (err) {
-            // Handle any error that occurs during the API call
-            setError("Looks like we can't find the user.");
+            setError(true);
+            setUserData([]);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="p-4">
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="mb-4">
+        <div className="container mx-auto p-6">
+            <form onSubmit={handleSubmit} className="bg-[#343a40] p-6 rounded-lg shadow-xl max-w-lg mx-auto">
                 <input
                     type="text"
-                    placeholder="Search GitHub users..."
-                    className="border p-2 rounded w-full"
+                    placeholder="Search GitHub username..."
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    className="block w-full p-2 mb-4 border border-[#495057] bg-[#212529] text-[#f8f9fa] rounded"
                 />
+
+                <input
+                    type="text"
+                    placeholder="Location (optional)"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="block w-full p-2 mb-4 border border-[#495057] bg-[#212529] text-[#f8f9fa] rounded"
+                />
+
+                <input
+                    type="number"
+                    placeholder="Minimum Repositories (optional)"
+                    value={minRepos}
+                    onChange={(e) => setMinRepos(e.target.value)}
+                    className="block w-full p-2 mb-4 border border-[#495057] bg-[#212529] text-[#f8f9fa] rounded"
+                />
+
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white mt-2 p-2 rounded"
+                    className="bg-[#6c757d] hover:bg-[#5a6268] text-[#f8f9fa] font-bold py-2 px-4 rounded w-full"
                 >
                     Search
                 </button>
             </form>
 
-            {/* Loading State */}
-            {loading && <p>Loading...</p>}
+            {loading && <p className="text-center mt-4 text-[#f8f9fa]">Loading...</p>}
+            {error && <p className="text-center text-red-500 mt-4">Looks like we cant find the user.</p>}
 
-            {/* Error Message */}
-            {error && <p className="text-red-500">{error}</p>}
-
-            {/* Search Results */}
-            <div>
-                {users.length > 0 ? (
-                    users.map((user) => (
-                        <div key={user.id} className="border p-4 mb-2 rounded">
+            {userData.length > 0 && (
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {userData.map((user) => (
+                        <div key={user.id} className="bg-[#343a40] p-4 rounded-lg shadow-md">
                             <img
                                 src={user.avatar_url}
                                 alt={user.login}
-                                className="w-16 h-16 rounded-full"
+                                className="w-20 h-20 rounded-full mx-auto"
                             />
-                            <p>
-                                <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                                    {user.login}
-                                </a>
-                            </p>
-                            <p>Location: {user.location || "Unknown"}</p>
-                            <p>Repos: {user.public_repos}</p>
+                            <h3 className="text-center mt-4 text-lg font-semibold text-[#f8f9fa]">{user.login}</h3>
+                            <p className="text-center text-[#6c757d]">{user.location || 'No location specified'}</p>
+                            <p className="text-center text-[#6c757d]">Repositories: {user.public_repos || 'No repo'}</p>
+                            <a
+                                href={user.html_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block text-center mt-2 text-gray-100 bg-gray-500 p-4 rounded"
+                            >
+                                View Profile
+                            </a>
                         </div>
-                    ))
-                ) : (
-                    !loading && <p>No users found.</p>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
