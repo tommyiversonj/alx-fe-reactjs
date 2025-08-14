@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import recipesData from './data.json'; // Assuming you have a JSON file with recipe data
-
+import React, { useState } from 'react';
 
 const AddRecipeForm = () => {
     const [title, setTitle] = useState('');
