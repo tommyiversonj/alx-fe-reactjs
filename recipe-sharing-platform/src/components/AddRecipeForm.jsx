@@ -6,16 +6,20 @@ const AddRecipeForm = () => {
     const [steps, setSteps] = useState('');
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        // Basic validation
+    // Separate validation function
+    const validate = () => {
         const newErrors = {};
         if (!title.trim()) newErrors.title = "Title is required.";
         if (!ingredients.trim() || ingredients.split('\n').length < 2) {
             newErrors.ingredients = "Please list at least two ingredients.";
         }
         if (!steps.trim()) newErrors.steps = "Preparation steps are required.";
+        return newErrors;
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = validate();
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -25,11 +29,17 @@ const AddRecipeForm = () => {
         // If valid, process form data
         console.log({ title, ingredients, steps });
         alert("Recipe submitted!");
+
+        // Clear form
+        setTitle('');
+        setIngredients('');
+        setSteps('');
+        setErrors({});
     };
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl md:text-3xl font-bold mb-6">Add New Recipe</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center">Add New Recipe</h1>
             <form
                 onSubmit={handleSubmit}
                 className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto space-y-4"
