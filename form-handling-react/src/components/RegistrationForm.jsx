@@ -1,83 +1,61 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const RegistrationForm = () => {
-    const [formData, setFormData] = useState({
-        username: "",
-        email: "",
-        password: ""
-    });
-    const [error, setError] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({});
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const validate = () => {
+        let tempErrors = {};
+        if (!username) tempErrors.username = "Username is required!";
+        if (!email) tempErrors.email = "Email is required!";
+        if (!password) tempErrors.password = "Password is required!";
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Basic validation
-        if (!formData.username || !formData.email || !formData.password) {
-            setError("All fields are required.");
-            return;
+        if (validate()) {
+            console.log("Submitted Data:", { username, email, password });
+            setTimeout(() => alert("User Registered Successfully!"), 500);
         }
-
-        setError("");
-        console.log("Submitting form data:", formData);
-
-        // Mock API request
-        fetch("https://jsonplaceholder.typicode.com/users", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("Response:", data);
-                alert("User registered successfully!");
-            })
-            .catch((err) => console.error("Error:", err));
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded">
-            <h2 className="text-xl font-bold">User Registration (Controlled)</h2>
-
-            {error && <p className="text-red-500">{error}</p>}
-
-            <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                value={formData.username}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-            />
-
-            <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-            />
-
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                className="border p-2 w-full rounded"
-            />
-
-            <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-            >
-                Register
-            </button>
+        <form onSubmit={handleSubmit} className="form-container">
+            <div>
+                <label>Username:</label>
+                <input
+                    type="text"
+                    name="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+                {errors.username && <p className="error">{errors.username}</p>}
+            </div>
+            <div>
+                <label>Email:</label>
+                <input
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                {errors.email && <p className="error">{errors.email}</p>}
+            </div>
+            <div>
+                <label>Password:</label>
+                <input
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                {errors.password && <p className="error">{errors.password}</p>}
+            </div>
+            <button type="submit">Register</button>
         </form>
     );
 };

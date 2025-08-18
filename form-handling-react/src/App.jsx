@@ -11,8 +11,8 @@ function App() {
 
   return (
     <>
-      <div className="max-w-lg mx-auto mt-10 space-y-6">
-      <RegistrationForm />
+     <div className="App">
+      <h1>User Registration</h1>
       <FormikForm />
     </div>
     </>
